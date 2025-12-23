@@ -6,9 +6,12 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ProductProvider } from './contexts/ProductContext';
 import { CartProvider } from './contexts/CartContext';
 import { AlertProvider } from './contexts/AlertContext';
+import { WishlistProvider } from './contexts/WishlistContext';
+
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Shop from './pages/Shop';
+import Wishlist from './pages/Wishlist';
 import ProductDetail from './pages/ProductDetail';
 import Checkout from './pages/Checkout';
 import Home from './pages/Home';
@@ -31,12 +34,14 @@ function App() {
     <AuthProvider>
       <AlertProvider>
         <ProductProvider>
+          <WishlistProvider>
           <CartProvider>
             <BrowserRouter>
               <Navbar />
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/shop" element={<Shop />} />
+                <Route path="/wishlist" element={<Wishlist />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/checkout" element={<Checkout />} />
@@ -67,6 +72,7 @@ function App() {
               <Footer />
             </BrowserRouter>
           </CartProvider>
+          </WishlistProvider>
         </ProductProvider>
       </AlertProvider>
     </AuthProvider>

@@ -1,35 +1,43 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, User, Search, Ticket } from 'lucide-react';
+import { ShoppingBag, User, Search, Ticket, Heart } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useState } from 'react';
+import PromoBar from './PromoBar';
+
 import CouponModal from './CouponModal';
 import '../index.css';
 
 const Navbar = () => {
-// ... existing code ...
-
   const { currentUser } = useAuth();
   const location = useLocation();
   const [isCouponOpen, setIsCouponOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isActive = (path) => location.pathname === path;
 
   return (
+    <>
+    <PromoBar />
     <nav style={{
       position: 'fixed',
-      top: 0,
+      top: '35px', // Below PromoBar
       left: 0,
       width: '100%',
       padding: '0.8rem 0',
       backgroundColor: 'rgba(10,10,10,0.95)',
       backdropFilter: 'blur(10px)',
       borderBottom: '1px solid var(--color-grey)',
-      zIndex: 1000
+      zIndex: 1000,
+      height: '70px', // Explicit height for layout consistency
+      display: 'flex',
+      alignItems: 'center'
     }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+      <div className="container" style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+
+
         
         {/* Left Group: Logo + Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '3rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
           {/* Logo */}
           <Link to="/" style={{ 
             fontSize: '1.8rem', 
@@ -43,38 +51,42 @@ const Navbar = () => {
           </Link>
 
           {/* Home / Shop Tabs */}
-          <div style={{ display: 'flex', gap: '0' }}>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
              <Link to="/" style={{
-               padding: '0.5rem 1.5rem',
-               fontSize: '1rem',
+               padding: '0.5rem 1rem',
+               fontSize: '0.9rem',
                fontWeight: 'bold',
                color: isActive('/') ? 'black' : '#888',
                background: isActive('/') ? 'var(--color-neon-green)' : 'transparent',
                borderRadius: '4px',
-               transition: 'all 0.2s'
+               transition: 'all 0.2s',
+               textDecoration: 'none'
              }}>
                HOME
              </Link>
              <Link to="/shop" style={{
-               padding: '0.5rem 1.5rem',
-               fontSize: '1rem',
+               padding: '0.5rem 1rem',
+               fontSize: '0.9rem',
                fontWeight: 'bold',
                color: isActive('/shop') ? 'black' : '#888',
                background: isActive('/shop') ? 'var(--color-neon-green)' : 'transparent',
                borderRadius: '4px',
-               transition: 'all 0.2s'
+               transition: 'all 0.2s',
+               textDecoration: 'none'
              }}>
                SHOP
              </Link>
           </div>
         </div>
         
-        {/* Middle: Search Bar */}
+        {/* Middle: Search Bar - Absolutely Centered */}
         <div style={{ 
-          flex: 1, 
-          maxWidth: '500px', 
-          position: 'relative',
-          margin: '0 auto'
+          position: 'absolute',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '100%',
+          maxWidth: '500px'
         }}>
            <input 
              type="text" 
@@ -97,7 +109,7 @@ const Navbar = () => {
         </div>
         
         {/* Right: Actions */}
-        <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center', flexShrink: 0 }}>
+        <div style={{ display: 'flex', gap: '1.2rem', alignItems: 'center', flexShrink: 0, zIndex: 10 }}>
           
            {/* Coupon Icon */}
            <button 
@@ -108,43 +120,67 @@ const Navbar = () => {
             <div style={{ 
                width: '35px', height: '35px', 
                borderRadius: '50%', 
-               background: 'rgba(57, 255, 20, 0.1)', 
-               border: '1px solid var(--color-neon-green)',
+               background: 'transparent', 
+               border: '1px solid var(--color-grey)',
                display: 'flex', alignItems: 'center', justifyContent: 'center',
-               color: 'var(--color-neon-green)',
+               color: 'white',
                transition: 'all 0.3s'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--color-neon-green)';
-              e.currentTarget.style.color = 'black';
+              e.currentTarget.style.borderColor = 'var(--color-neon-green)';
+              e.currentTarget.style.color = 'var(--color-neon-green)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(57, 255, 20, 0.1)';
-              e.currentTarget.style.color = 'var(--color-neon-green)';
+              e.currentTarget.style.borderColor = 'var(--color-grey)';
+              e.currentTarget.style.color = 'white';
             }}
             >
                <Ticket size={18} />
             </div>
           </button>
 
+          {/* Wishlist Icon */}
+          <Link to="/wishlist" style={{ textDecoration: 'none' }}>
+            <div style={{ 
+               width: '35px', height: '35px', 
+               borderRadius: '50%', 
+               background: 'transparent', 
+               border: '1px solid var(--color-grey)',
+               display: 'flex', alignItems: 'center', justifyContent: 'center',
+               color: 'white',
+               transition: 'all 0.3s'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-neon-green)';
+              e.currentTarget.style.color = 'var(--color-neon-green)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.borderColor = 'var(--color-grey)';
+              e.currentTarget.style.color = 'white';
+            }}
+            >
+               <Heart size={18} />
+            </div>
+          </Link>
+
           <Link to="/cart" style={{ textDecoration: 'none' }}>
             <div style={{ 
                width: '35px', height: '35px', 
                borderRadius: '50%', 
-               background: 'rgba(57, 255, 20, 0.1)', 
-               border: '1px solid var(--color-neon-green)',
+               background: 'transparent', 
+               border: '1px solid var(--color-grey)',
                display: 'flex', alignItems: 'center', justifyContent: 'center',
-               color: 'var(--color-neon-green)',
+               color: 'white',
                transition: 'all 0.3s',
                position: 'relative'
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'var(--color-neon-green)';
-              e.currentTarget.style.color = 'black';
+              e.currentTarget.style.borderColor = 'var(--color-neon-green)';
+              e.currentTarget.style.color = 'var(--color-neon-green)';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(57, 255, 20, 0.1)';
-              e.currentTarget.style.color = 'var(--color-neon-green)';
+              e.currentTarget.style.borderColor = 'var(--color-grey)';
+              e.currentTarget.style.color = 'white';
             }}
             >
                <ShoppingBag size={18} />
@@ -179,10 +215,13 @@ const Navbar = () => {
         </div>
       </div>
       
+
+      
       {/* Coupon Modal */}
       <CouponModal isOpen={isCouponOpen} onClose={() => setIsCouponOpen(false)} />
 
     </nav>
+    </>
   );
 };
 

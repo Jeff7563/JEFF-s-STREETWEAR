@@ -146,39 +146,7 @@ const Dashboard = () => {
           </table>
         </div>
 
-// ... (Calculate Chart Data) inside fetchStats
-        const last7Days = [...Array(7)].map((_, i) => {
-          const d = new Date();
-          d.setDate(d.getDate() - i);
-          return d.toISOString().split('T')[0];
-        }).reverse();
 
-        const chartData = last7Days.map(date => {
-          const dailyRevenue = orders
-            .filter(order => {
-                // Ensure date exists and match YYYY-MM-DD
-                if (!order.createdAt) return false;
-                const orderDate = new Date(order.createdAt.seconds * 1000).toISOString().split('T')[0];
-                return orderDate === date && order.status !== 'cancelled';
-            })
-            .reduce((sum, order) => sum + (order.totalAmount || 0), 0);
-          
-          return { date, revenue: dailyRevenue };
-        });
-        
-        // Find max revenue for scaling
-        const maxRevenue = Math.max(...chartData.map(d => d.revenue), 1); // Avoid div by 0
-
-        setStats({
-          orders: ordersCount,
-          products: productsCount,
-          revenue,
-          recentOrders,
-          chartData, // Add to state
-          maxRevenue
-        });
-
-// ... (Render Chart)
         {/* Revenue Chart */}
         <div style={{ background: '#111', border: '1px solid #333', borderRadius: '8px', padding: '1.5rem' }}>
            <h2 style={{ fontSize: '1.2rem', marginBottom: '1.5rem', color: 'white' }}>REVENUE LAST 7 DAYS</h2>

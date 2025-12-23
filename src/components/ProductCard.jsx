@@ -1,11 +1,17 @@
 import { Link } from 'react-router-dom';
 import { getImageUrl } from '../services/cloudinary';
+import { Heart } from 'lucide-react';
+import { useWishlist } from '../contexts/WishlistContext';
 
 const ProductCard = ({ product }) => {
   const { id, name, price, images, category } = product;
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const imageUrl = images && images.length > 0 ? getImageUrl(images[0]) : 'https://placehold.co/400x600?text=No+Image';
 
+  const inWishlist = isInWishlist(id);
+
   return (
+    <div style={{ position: 'relative' }}>
     <Link to={`/product/${id}`} style={{ display: 'block' }}>
       <div style={{
         border: '1px solid var(--color-grey)',
@@ -65,6 +71,33 @@ const ProductCard = ({ product }) => {
         </div>
       </div>
     </Link>
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              toggleWishlist(id);
+            }}
+            style={{
+              position: 'absolute',
+              top: '10px',
+              right: '10px',
+              background: 'rgba(0,0,0,0.5)',
+              border: 'none',
+              borderRadius: '50%',
+              padding: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              zIndex: 10,
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.1)'}
+            onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+          >
+            <Heart size={20} color={inWishlist ? '#ff3b30' : 'white'} fill={inWishlist ? '#ff3b30' : 'none'} />
+          </button>
+    </div>
   );
 };
 

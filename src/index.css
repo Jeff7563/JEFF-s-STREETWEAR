@@ -112,3 +112,20 @@ input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--color-neon-green);
 }
+
+/* Responsive Utilities */
+.mobile-only {
+  display: none !important;
+}
+.desktop-only {
+  display: flex !important;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: flex !important;
+  }
+  .desktop-only {
+    display: none !important;
+  }
+}

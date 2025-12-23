@@ -61,7 +61,7 @@ const ProductList = () => {
                     <td style={{ padding: '1rem' }}>
                         <div style={{ display: 'flex', gap: '1rem' }}>
                             <Link to={`/admin/products/edit/${product.id}`}>
-                                <Edit size={18} color="var(--color-black)" />
+                                <Edit size={18} color="white" />
                             </Link>
                             <button onClick={() => handleDelete(product.id)} style={{ background: 'transparent' }}>
                                 <Trash2 size={18} color="var(--color-error)" />

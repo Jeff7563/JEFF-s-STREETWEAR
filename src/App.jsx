@@ -61,8 +61,10 @@ function App() {
                   <Route path="orders" element={<OrderList />} />
                   <Route path="coupons" element={<CouponList />} />
                   <Route path="coupons/new" element={<CouponForm />} />
+                  <Route path="coupons/edit/:id" element={<CouponForm />} />
                 </Route>
               </Routes>
+              <Footer />
             </BrowserRouter>
           </CartProvider>
         </ProductProvider>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
-import { collection, query, orderBy, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, orderBy, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAlert } from '../../contexts/AlertContext';
+import { CheckCircle, Trash, XCircle, Clock } from 'lucide-react';
 
 const OrderList = () => {
   const [orders, setOrders] = useState([]);
@@ -26,9 +27,22 @@ const OrderList = () => {
       try {
           await updateDoc(doc(db, 'orders', id), { status: newStatus });
           setOrders(orders.map(o => o.id === id ? { ...o, status: newStatus } : o));
+          showAlert(`Order marked as ${newStatus}`);
       } catch (error) {
           showAlert('Failed to update status');
       }
+  }
+
+  async function deleteOrder(id) {
+    if (!window.confirm("Are you sure you want to delete this order? This action cannot be undone.")) return;
+    try {
+      await deleteDoc(doc(db, 'orders', id));
+      setOrders(orders.filter(o => o.id !== id));
+      showAlert("Order deleted successfully");
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      showAlert("Failed to delete order");
+    }
   }
 
   if (loading) return <div>Loading...</div>;
@@ -47,11 +61,18 @@ const OrderList = () => {
                             {new Date(order.createdAt?.seconds * 1000).toLocaleDateString()}
                         </span>
                     </div>
-                    <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <select 
                             value={order.status} 
                             onChange={(e) => updateStatus(order.id, e.target.value)}
-                            style={{ padding: '0.2rem', fontSize: '0.9rem' }}
+                            style={{ 
+                                padding: '0.4rem', 
+                                fontSize: '0.9rem', 
+                                background: '#111', 
+                                color: 'white', 
+                                border: '1px solid #333',
+                                borderRadius: '4px'
+                            }}
                         >
                             <option value="pending">Pending</option>
                             <option value="paid">Paid</option>
@@ -59,6 +80,39 @@ const OrderList = () => {
                             <option value="delivered">Delivered</option>
                             <option value="cancelled">Cancelled</option>
                         </select>
+                        
+                        {/* Instant Actions */}
+                        {order.status !== 'paid' && order.status !== 'cancelled' && (
+                             <button 
+                               onClick={() => updateStatus(order.id, 'paid')}
+                               style={{ 
+                                   display: 'flex', alignItems: 'center', gap: '0.3rem', 
+                                   background: 'rgba(57, 255, 20, 0.1)', 
+                                   border: '1px solid var(--color-neon-green)', 
+                                   color: 'var(--color-neon-green)', 
+                                   padding: '0.4rem 0.8rem', 
+                                   borderRadius: '4px', 
+                                   cursor: 'pointer' 
+                               }}
+                               title="Mark as Paid"
+                             >
+                               <CheckCircle size={16} /> Paid
+                             </button>
+                        )}
+                        <button 
+                             onClick={() => deleteOrder(order.id)} // Using deleteOrder function
+                             style={{ 
+                                 background: 'transparent', 
+                                 border: '1px solid #ef4444', 
+                                 color: '#ef4444', 
+                                 padding: '0.4rem', 
+                                 borderRadius: '4px', 
+                                 cursor: 'pointer' 
+                             }}
+                             title="Delete Order"
+                        >
+                           <Trash size={16} />
+                        </button>
                     </div>
                 </div>
                 

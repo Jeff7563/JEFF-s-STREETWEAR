@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { db } from '../../firebase';
 import { collection, getDocs, deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
-import { Plus, Trash, ToggleLeft, ToggleRight } from 'lucide-react';
+import { Plus, Trash, ToggleLeft, ToggleRight, Edit } from 'lucide-react';
 
 export default function CouponList() {
   const [coupons, setCoupons] = useState([]);
@@ -85,6 +85,9 @@ export default function CouponList() {
                   >
                     {coupon.isActive ? <ToggleRight size={24} /> : <ToggleLeft size={24} />}
                   </button>
+                  <Link to={`/admin/coupons/edit/${coupon.id}`} style={{ marginRight: '1rem', color: '#fff' }} title="Edit">
+                     <Edit size={18} />
+                  </Link>
                   <button 
                     onClick={() => handleDelete(coupon.id)}
                     style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#ef4444' }}

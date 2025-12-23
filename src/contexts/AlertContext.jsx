@@ -8,27 +8,26 @@ export function useAlert() {
 }
 
 export function AlertProvider({ children }) {
-  const [alertState, setAlertState] = useState({
-    isOpen: false,
-    message: ''
-  });
+  const [toasts, setToasts] = useState([]);
 
-  const showAlert = (message) => {
-    setAlertState({ isOpen: true, message });
+  const showAlert = (message, type = 'info') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+
+    // Auto remove after 3 seconds
+    setTimeout(() => {
+      removeToast(id);
+    }, 3000);
   };
 
-  const hideAlert = () => {
-    setAlertState(prev => ({ ...prev, isOpen: false }));
+  const removeToast = (id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
   };
 
   return (
     <AlertContext.Provider value={{ showAlert }}>
       {children}
-      <CustomAlert 
-        isOpen={alertState.isOpen} 
-        message={alertState.message} 
-        onClose={hideAlert} 
-      />
+      <CustomAlert toasts={toasts} removeToast={removeToast} />
     </AlertContext.Provider>
   );
 }

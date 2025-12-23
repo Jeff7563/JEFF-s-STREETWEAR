@@ -11,21 +11,29 @@ const AdminRoute = ({ children }) => {
   useEffect(() => {
     async function checkAdmin() {
       if (currentUser) {
-        // Optimistic check if role is in auth token (custom claims) - simpler to check DB for now
-        // Or if we stored role in AuthContext, we could use that.
-        // Let's fetch local Firestore user doc to be safe
+        console.log("Checking admin role for user:", currentUser.uid);
         try {
             const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-            if (userDoc.exists() && userDoc.data().role === 'admin') {
-                setIsAdmin(true);
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                console.log("User Data:", userData);
+                if (userData.role === 'admin') {
+                    console.log("User is admin");
+                    setIsAdmin(true);
+                } else {
+                    console.log("User is NOT admin (role: " + userData.role + ")");
+                    setIsAdmin(false);
+                }
             } else {
+                console.log("User document does not exist");
                 setIsAdmin(false);
             }
         } catch (e) {
-            console.error(e);
+            console.error("Error checking permissions:", e);
             setIsAdmin(false);
         }
       } else {
+        console.log("No current user");
         setIsAdmin(false);
       }
     }
@@ -33,11 +41,21 @@ const AdminRoute = ({ children }) => {
   }, [currentUser]);
 
   if (isAdmin === null) {
-      return <div className="container" style={{ paddingTop: '100px' }}>Loading Access...</div>; 
+      return (
+        <div className="container" style={{ paddingTop: '100px', display: 'flex', justifyContent: 'center', color: 'white' }}>
+            <h2>Checking Permissions...</h2>
+        </div>
+      ); 
   }
 
-  if (!currentUser || !isAdmin) {
-    return <Navigate to="/" />;
+  if (!currentUser) {
+      console.log("Redirecting to login: No user");
+      return <Navigate to="/login" />;
+  }
+
+  if (!isAdmin) {
+      console.log("Redirecting to home: Not admin");
+      return <Navigate to="/" />;
   }
 
   return children;

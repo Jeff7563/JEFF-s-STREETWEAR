@@ -1,67 +1,64 @@
-import { X } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
 
-const CustomAlert = ({ message, isOpen, onClose }) => {
-  if (!isOpen) return null;
-
-  return (
+const CustomAlert = ({ toasts, removeToast }) => {
+  return createPortal(
     <div style={{
       position: 'fixed',
-      top: 0,
-      left: 0,
-      width: '100%',
-      height: '100%',
-      backgroundColor: 'rgba(0, 0, 0, 0.6)',
-      backdropFilter: 'blur(8px)',
-      zIndex: 9999,
+      bottom: '2rem',
+      right: '2rem',
+      zIndex: 99999,
       display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      animation: 'fadeIn 0.2s ease-out'
+      flexDirection: 'column',
+      gap: '1rem',
+      maxWidth: '400px',
+      pointerEvents: 'none' // Allow clicking through empty space
     }}>
-      <div style={{
-        background: '#0a0a0a',
-        border: '1px solid var(--color-neon-green)',
-        borderRadius: '12px',
-        padding: '2rem',
-        maxWidth: '400px',
-        width: '90%',
-        textAlign: 'center',
-        position: 'relative',
-        boxShadow: '0 0 30px rgba(57, 255, 20, 0.2)',
-        animation: 'scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)'
-      }}>
-        <div style={{ marginBottom: '1.5rem', color: 'white', fontSize: '1.1rem', lineHeight: '1.5' }}>
-          {message}
-        </div>
-
-        <button 
-          onClick={onClose}
-          className="btn-primary"
-          style={{ 
-            width: '100%', 
-            padding: '0.8rem',
-            fontSize: '1rem',
-            textTransform: 'uppercase',
-            letterSpacing: '1px'
-           }}
+      {toasts.map(toast => (
+        <div 
+          key={toast.id} 
+          style={{
+            background: '#111',
+            border: `1px solid ${toast.type === 'error' ? '#ef4444' : 'var(--color-neon-green)'}`,
+            borderRadius: '8px',
+            padding: '1rem',
+            color: 'white',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '1rem',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+            animation: 'slideIn 0.3s ease-out',
+            pointerEvents: 'auto', // Re-enable clicks
+            minWidth: '300px'
+          }}
         >
-          ACKNOWLEDGE
-        </button>
-      </div>
-      
+          {toast.type === 'error' ? (
+             <AlertCircle color="#ef4444" size={24} />
+          ) : (
+             <CheckCircle color="var(--color-neon-green)" size={24} />
+          )}
+          
+          <div style={{ flex: 1, fontSize: '0.95rem' }}>{toast.message}</div>
+          
+          <button 
+            onClick={() => removeToast(toast.id)}
+            style={{ background: 'transparent', border: 'none', color: '#666', cursor: 'pointer' }}
+          >
+            <X size={18} />
+          </button>
+        </div>
+      ))}
+
       <style>
         {`
-          @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-          @keyframes scaleUp {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+          @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
           }
         `}
       </style>
-    </div>
+    </div>,
+    document.body
   );
 };
 

@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { db } from '../../firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { useNavigate } from 'react-router-dom';
+import { collection, addDoc, serverTimestamp, doc, getDoc, updateDoc } from 'firebase/firestore';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAlert } from '../../contexts/AlertContext';
 
 export default function CouponForm() {
@@ -16,29 +16,64 @@ export default function CouponForm() {
     isActive: true
   });
 
+  const { id } = useParams();
+  const isEditMode = !!id;
+
+  async function fetchCoupon() {
+    if (!id) return;
+    try {
+       const docRef = doc(db, 'coupons', id);
+       const docSnap = await getDoc(docRef);
+       if (docSnap.exists()) {
+          const data = docSnap.data();
+          setFormData({
+            code: data.code || '',
+            description: data.description || '',
+            discountAmount: data.discountAmount || '',
+            minPurchaseAmount: data.minPurchaseAmount || '',
+            isActive: data.isActive !== undefined ? data.isActive : true
+          });
+       }
+    } catch (error) {
+       console.error("Error fetching coupon:", error);
+       showAlert("Failed to load coupon data");
+    }
+  }
+
+  useEffect(() => {
+    fetchCoupon();
+  }, [id]);
+
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
     try {
-      await addDoc(collection(db, "coupons"), {
+      const couponData = {
         code: formData.code.toUpperCase(),
         description: formData.description,
         discountAmount: Number(formData.discountAmount),
         minPurchaseAmount: Number(formData.minPurchaseAmount),
         isActive: formData.isActive,
-        createdAt: serverTimestamp()
-      });
+        updatedAt: serverTimestamp()
+      };
+
+      if (isEditMode) {
+         await updateDoc(doc(db, "coupons", id), couponData);
+      } else {
+         couponData.createdAt = serverTimestamp();
+         await addDoc(collection(db, "coupons"), couponData);
+      }
       navigate('/admin/coupons');
     } catch (error) {
-      console.error("Error creating coupon:", error);
-      showAlert("Failed to create coupon");
+      console.error("Error saving coupon:", error);
+      showAlert("Failed to save coupon");
     }
     setLoading(false);
   }
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', color: 'white' }}>
-      <h1 style={{ fontSize: '2rem', marginBottom: '2rem' }}>CREATE NEW COUPON</h1>
+      <h1 style={{ fontSize: '2rem', marginBottom: '2rem' }}>{id ? 'EDIT COUPON' : 'CREATE NEW COUPON'}</h1>
       
       <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
         
@@ -118,7 +153,7 @@ export default function CouponForm() {
           className="btn-primary"
           style={{ padding: '1rem', marginTop: '1rem', fontWeight: 'bold' }}
         >
-          {loading ? 'CREATING...' : 'CREATE COUPON'}
+          {loading ? 'SAVING...' : (id ? 'UPDATE COUPON' : 'CREATE COUPON')}
         </button>
 
       </form>

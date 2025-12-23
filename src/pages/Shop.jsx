@@ -98,8 +98,20 @@ const Shop = () => {
               </h2>
            </div>
 
+import SkeletonCard from '../components/SkeletonCard';
+
+// ...
+
            {loading ? (
-             <div>Loading products...</div>
+             <div style={{ 
+               display: 'grid', 
+               gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', 
+               gap: '2rem' 
+             }}>
+               {[...Array(8)].map((_, i) => (
+                 <SkeletonCard key={i} />
+               ))}
+             </div>
            ) : filteredProducts.length === 0 ? (
              <div style={{ padding: '4rem', textAlign: 'center', color: '#666', border: '1px dashed #333' }}>No products found.</div>
            ) : (

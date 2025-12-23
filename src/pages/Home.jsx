@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useProducts } from '../contexts/ProductContext';
 import ProductCard from '../components/ProductCard';
 import { ArrowRight, ChevronRight, CheckCircle } from 'lucide-react';
+import heroBg from '../assets/hero-bg-final.png';
 
 const Home = () => {
   const { products, loading } = useProducts();
@@ -16,7 +17,7 @@ const Home = () => {
       
       {/* 1. Hero Banner (Sasom Style - Wide & Clean) */}
       <div style={{ 
-        height: '500px', 
+        height: '600px', 
         width: '100%', 
         position: 'relative',
         marginBottom: '3rem'
@@ -27,7 +28,7 @@ const Home = () => {
           left: 0, 
           width: '100%', 
           height: '100%', 
-          background: 'linear-gradient(90deg, #0a0a0a 0%, transparent 50%), url(https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2000&auto=format&fit=crop)',
+          background: `linear-gradient(90deg, #0a0a0a 0%, rgba(10,10,10,0.5) 50%, transparent 100%), url(${heroBg})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           display: 'flex',
@@ -38,6 +39,7 @@ const Home = () => {
                 fontSize: '4rem', 
                 marginBottom: '1rem', 
                 maxWidth: '600px',
+                textShadow: '2px 2px 4px rgba(0,0,0,0.8)',
                 lineHeight: 1
               }}>
                 JEFF's<br /><span style={{ color: 'var(--color-neon-green)' }}>STREETWEAR</span>
@@ -92,6 +94,42 @@ const Home = () => {
           </HorizontalScroll>
         )}
       </Section>
+
+      {/* 5. Featured Brands (Marquee/Grid) */}
+      <div style={{ background: '#111', padding: '4rem 0', marginBottom: '4rem' }}>
+         <div className="container">
+            <h2 style={{ fontSize: '1.8rem', textAlign: 'center', marginBottom: '2rem' }}>FEATURED BRANDS</h2>
+            <div style={{ 
+               display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '3rem', 
+               opacity: 0.7, filter: 'grayscale(100%)' 
+             }}>
+               {['JEFFs'].map((brand, index) => (
+                  <div key={index} style={{ fontSize: '1.5rem', fontWeight: 'bold', letterSpacing: '2px' }}>{brand}</div>
+               ))}
+            </div>
+         </div>
+      </div>
+
+      {/* 6. Why Choose Us (Detailed) */}
+      <div className="container" style={{ marginBottom: '6rem' }}>
+         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem' }}>
+            <div style={{ padding: '2rem', border: '1px solid #333', borderRadius: '12px' }}>
+               <CheckCircle size={40} color="var(--color-neon-green)" style={{ marginBottom: '1rem' }} />
+               <h3 style={{ fontSize: '1.4rem', marginBottom: '1rem' }}>Authenticity Guaranteed</h3>
+               <p style={{ color: '#888' }}>Every item is verified by our expert team. We promise 100% genuine products or your money back.</p>
+            </div>
+            <div style={{ padding: '2rem', border: '1px solid #333', borderRadius: '12px' }}>
+               <ArrowRight size={40} color="var(--color-neon-green)" style={{ marginBottom: '1rem' }} />
+               <h3 style={{ fontSize: '1.4rem', marginBottom: '1rem' }}>Fast Shipping</h3>
+               <p style={{ color: '#888' }}>We ship globally with premium partners to ensure your drip arrives safe and on time.</p>
+            </div>
+            <div style={{ padding: '2rem', border: '1px solid #333', borderRadius: '12px' }}>
+               <ChevronRight size={40} color="var(--color-neon-green)" style={{ marginBottom: '1rem' }} />
+               <h3 style={{ fontSize: '1.4rem', marginBottom: '1rem' }}>Secure Payment</h3>
+               <p style={{ color: '#888' }}>Multiple payment options available with top-tier security encryption for your peace of mind.</p>
+            </div>
+         </div>
+      </div>
 
     </div>
   );
